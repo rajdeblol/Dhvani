@@ -134,7 +134,7 @@ export default function NoteList() {
               disabled={isPending || isConfirming || isSuccess}
               className={`px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
                 isSuccess 
-                  ? 'bg-green-600 text-white cursor-default' 
+                  ? 'bg-green-600 text-white cursor-default disabled:bg-green-600 disabled:text-white disabled:opacity-100' 
                   : 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:text-zinc-400'
               }`}
             >
