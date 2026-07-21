@@ -89,7 +89,7 @@ export default function NoteList() {
         address: DHVANI_ADDRESS,
         abi: DHVANI_ABI,
         functionName: 'verifyNote',
-        args: [storedHash, `0x${signature}`],
+        args: [storedHash, signature],
       })
     } catch (err) {
       console.error('Verification failed', err)
