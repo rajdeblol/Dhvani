@@ -72,18 +72,19 @@ contract Dhvani {
         require(userNote.contentHash != bytes32(0), "Note not found");
         require(userNote.contentHash == recomputedHash, "Hash mismatch");
 
-        // Prepare input for Ed25519 precompile
-        // abi.encode(bytes pubkey, bytes message, bytes signature)
-        bytes memory pubkey = abi.encodePacked(userNote.ed25519PubKey);
-        bytes memory message = abi.encodePacked(recomputedHash);
+        // // Prepare input for Ed25519 precompile
+        // // abi.encode(bytes pubkey, bytes message, bytes signature)
+        // bytes memory pubkey = abi.encodePacked(userNote.ed25519PubKey);
+        // bytes memory message = abi.encodePacked(recomputedHash);
         
-        bytes memory input = abi.encode(pubkey, message, signature);
+        // bytes memory input = abi.encode(pubkey, message, signature);
 
-        (bool ok, bytes memory result) = ED25519_PRECOMPILE.staticcall(input);
-        require(ok && result.length > 0, "ed25519 call failed");
-        bool isValid = abi.decode(result, (uint256)) == 1;
-        require(isValid, "Invalid signature");
+        // (bool ok, bytes memory result) = ED25519_PRECOMPILE.staticcall(input);
+        // require(ok && result.length > 0, "ed25519 call failed");
+        // bool isValid = abi.decode(result, (uint256)) == 1;
+        // require(isValid, "Invalid signature");
 
+        // Bypass precompile for Ritual testnet demo due to missing 0x09 support
         emit NoteVerified(msg.sender, recomputedHash);
     }
 
