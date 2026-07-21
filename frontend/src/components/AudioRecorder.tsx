@@ -62,7 +62,10 @@ export default function AudioRecorder() {
     setErrorMsg(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      mediaRecorderRef.current = new MediaRecorder(stream)
+      
+      // Force extreme low bitrate (8kbps) to ensure the file is tiny and doesn't crash the RPC
+      const options = { audioBitsPerSecond: 8000 }
+      mediaRecorderRef.current = new MediaRecorder(stream, options)
       
       mediaRecorderRef.current.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data)
@@ -122,6 +125,12 @@ export default function AudioRecorder() {
   const saveToChain = async () => {
     if (!audioBuffer) return
     setErrorMsg(null)
+
+    // Ritual testnet RPC has strict payload limits. Limit to ~30KB max.
+    if (audioBuffer.byteLength > 30000) {
+      setErrorMsg(`Audio file is too large (${Math.round(audioBuffer.byteLength / 1024)}KB). Please record a shorter note (max 30KB) to prevent network crash!`)
+      return
+    }
 
     try {
       // Polyfill global Buffer for eciesjs if missing
