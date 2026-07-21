@@ -132,7 +132,11 @@ export default function NoteList() {
             <button 
               onClick={handleVerify}
               disabled={isPending || isConfirming || isSuccess}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:text-zinc-400 rounded text-sm font-medium transition-colors flex items-center gap-1"
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
+                isSuccess 
+                  ? 'bg-green-600 text-white cursor-default' 
+                  : 'bg-blue-600 hover:bg-blue-700 disabled:bg-blue-900 disabled:text-zinc-400'
+              }`}
             >
               {(isPending || isConfirming) ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
               {isSuccess ? 'Verified!' : 'Verify on Chain'}
