@@ -37,6 +37,7 @@ export default function AudioRecorder() {
   const [audioBuffer, setAudioBuffer] = useState<ArrayBuffer | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [savedHash, setSavedHash] = useState<string | null>(null)
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   
@@ -60,6 +61,7 @@ export default function AudioRecorder() {
 
   const startRecording = async () => {
     setErrorMsg(null)
+    setUploadedFileName(null)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       
@@ -76,6 +78,7 @@ export default function AudioRecorder() {
         chunksRef.current = []
         const arrayBuffer = await blob.arrayBuffer()
         setAudioBuffer(arrayBuffer)
+        setUploadedFileName("Recorded Audio (Microphone)")
         
         // Load into wavesurfer for playback
         const url = URL.createObjectURL(blob)
@@ -107,6 +110,7 @@ export default function AudioRecorder() {
     try {
       const arrayBuffer = await file.arrayBuffer()
       setAudioBuffer(arrayBuffer)
+      setUploadedFileName(file.name)
 
       const url = URL.createObjectURL(file)
       // Delay slightly to ensure React has updated the DOM before wavesurfer tries to draw
@@ -209,6 +213,13 @@ export default function AudioRecorder() {
 
       {audioBuffer && !isRecording && (
         <div className="space-y-4">
+          {uploadedFileName && (
+            <div className="text-sm text-green-400 flex items-center gap-2 bg-green-950/20 p-2 rounded border border-green-900/50">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              File ready: <strong>{uploadedFileName}</strong> ({(audioBuffer.byteLength / 1024).toFixed(1)} KB)
+            </div>
+          )}
+          
           <button 
             onClick={saveToChain}
             disabled={isPending || isConfirming}
