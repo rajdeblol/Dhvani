@@ -51,7 +51,10 @@ npm install
 ```
 
 Update the Contract Address:
-In `src/components/AudioRecorder.tsx` and `src/components/NoteList.tsx`, replace `DHVANI_ADDRESS` with your newly deployed contract address.
+Create a `.env.local` file in the `frontend` folder and add your deployed contract address:
+```env
+NEXT_PUBLIC_DHVANI_ADDRESS=0xYourDeployedContractAddress
+```
 
 Run the development server:
 ```bash

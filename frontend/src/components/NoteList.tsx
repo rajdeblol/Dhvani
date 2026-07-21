@@ -8,8 +8,8 @@ import { Buffer } from 'buffer'
 import { LockOpen, CheckCircle, Play, Mic, Loader2 } from 'lucide-react'
 import { computeAudioHash, getOrCreateKeys, signHash } from '@/lib/crypto'
 
-// Note: Ensure you set this address after deployment
-const DHVANI_ADDRESS = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' as `0x${string}`
+// Use environment variable for the deployed contract address
+const DHVANI_ADDRESS = (process.env.NEXT_PUBLIC_DHVANI_ADDRESS || '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045') as `0x${string}`
 
 const DHVANI_ABI = [
   {

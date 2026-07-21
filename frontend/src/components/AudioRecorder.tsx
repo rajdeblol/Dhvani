@@ -25,8 +25,8 @@ const DHVANI_ABI = [
   }
 ]
 
-// Note: Ensure you set this address after deployment (using vitalik.eth address temporarily so MetaMask doesn't block it)
-const DHVANI_ADDRESS = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045' as `0x${string}`
+// Use environment variable for the deployed contract address
+const DHVANI_ADDRESS = (process.env.NEXT_PUBLIC_DHVANI_ADDRESS || '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045') as `0x${string}`
 
 export default function AudioRecorder() {
   const { isConnected } = useAccount()
@@ -159,11 +159,14 @@ export default function AudioRecorder() {
   }
 
   if (!isConnected) {
-    return <div className="text-zinc-400">Please connect wallet to record notes.</div>
+    return <div className="text-zinc-400">Please connect wallet to record notes. Ensure you are on the Ritual Testnet (Chain ID 1979).</div>
   }
 
   return (
     <div className="space-y-6">
+      <div className="bg-blue-950/30 border border-blue-900/50 text-blue-200 p-3 rounded-lg text-sm">
+        <p><strong>Note:</strong> Please ensure your wallet is connected to the <strong>Ritual Testnet</strong> (Chain ID: 1979).</p>
+      </div>
       <div className="flex flex-wrap gap-4 items-center">
         {!isRecording ? (
           <button 
