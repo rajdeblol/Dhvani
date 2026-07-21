@@ -36,6 +36,7 @@ export default function AudioRecorder() {
   const [isRecording, setIsRecording] = useState(false)
   const [audioBuffer, setAudioBuffer] = useState<ArrayBuffer | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [savedHash, setSavedHash] = useState<string | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   
@@ -150,6 +151,8 @@ export default function AudioRecorder() {
         functionName: 'storeNote',
         args: [contentHash, encryptedHex, metadataHex, edPubHex],
       })
+      
+      setSavedHash(contentHash)
     } catch (err: any) {
       console.error('Error saving to chain', err)
       const msg = `Error: ${err?.shortMessage || err?.message || err?.toString() || 'Unknown error'}`
@@ -171,44 +174,42 @@ export default function AudioRecorder() {
         {!isRecording ? (
           <button 
             onClick={startRecording}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             <Mic size={18} /> Record
           </button>
         ) : (
           <button 
             onClick={stopRecording}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors animate-pulse"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2 animate-pulse"
           >
-            <Square size={18} /> Stop
+            <div className="w-2 h-2 bg-white rounded-full" /> Stop Recording
           </button>
         )}
 
-        <button 
-          onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors"
-        >
+        <label className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors cursor-pointer flex items-center gap-2">
           <Upload size={18} /> Upload File
-        </button>
-        <input 
-          type="file" 
-          accept="audio/*" 
-          ref={fileInputRef} 
-          onChange={handleFileUpload}
-          className="hidden" 
-        />
-        
-        {audioBuffer && !isRecording && (
+          <input type="file" accept="audio/*" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+        </label>
+      </div>
+
+      <div 
+        ref={waveformRef} 
+        className={`w-full rounded bg-zinc-950 border border-zinc-800 transition-all duration-300 ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent' : 'opacity-100 p-2'}`}
+      />
+
+      {audioBuffer && !isRecording && (
+        <div className="space-y-4">
           <button 
             onClick={saveToChain}
             disabled={isPending || isConfirming}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 rounded-lg font-medium transition-colors"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-900 disabled:text-zinc-400 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
             {isPending || isConfirming ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
             {isConfirming ? 'Confirming...' : 'Save Vault'}
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {errorMsg && (
         <div className="text-red-400 font-medium text-sm p-3 bg-red-950/50 rounded-lg border border-red-900">
@@ -216,13 +217,15 @@ export default function AudioRecorder() {
         </div>
       )}
 
-      <div 
-        ref={waveformRef} 
-        className={`w-full rounded bg-zinc-950 border border-zinc-800 transition-all duration-300 ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent' : 'opacity-100 p-2'}`}
-      />
-
       {isSuccess && (
-        <div className="text-green-400 text-sm">Note successfully saved to the blockchain!</div>
+        <div className="text-green-400 font-medium p-3 bg-green-950/20 border border-green-900/50 rounded-lg space-y-2">
+          <p>Note successfully saved to the blockchain!</p>
+          {savedHash && (
+            <div className="text-xs text-zinc-400 break-all bg-zinc-900 p-2 rounded">
+              Your Hash: <span className="text-zinc-300">{savedHash}</span>
+            </div>
+          )}
+        </div>
       )}
     </div>
   )
