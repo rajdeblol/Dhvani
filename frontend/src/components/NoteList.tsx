@@ -88,6 +88,7 @@ export default function NoteList() {
         abi: DHVANI_ABI,
         functionName: 'verifyNote',
         args: [hashToVerify, signature],
+        gas: BigInt(200000), // Bypass viem gas estimation bug on Ritual RPC
       })
     } catch (err) {
       console.error('Verification failed', err)
