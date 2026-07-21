@@ -126,9 +126,9 @@ export default function AudioRecorder() {
     if (!audioBuffer) return
     setErrorMsg(null)
 
-    // Ritual testnet RPC has strict payload limits. Limit to ~30KB max.
-    if (audioBuffer.byteLength > 30000) {
-      setErrorMsg(`Audio file is too large (${Math.round(audioBuffer.byteLength / 1024)}KB). Please record a shorter note (max 30KB) to prevent network crash!`)
+    // User requested up to 1MB. Warning: The Ritual RPC might reject this with "oversized data"!
+    if (audioBuffer.byteLength > 1048576) {
+      setErrorMsg(`Audio file is too large (${Math.round(audioBuffer.byteLength / 1024)}KB). Please keep it under 1MB!`)
       return
     }
 
