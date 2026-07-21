@@ -41,7 +41,7 @@ export default function NoteList() {
   const { data: hash, writeContract, isPending, error } = useWriteContract()
   const { isLoading: isConfirming, isSuccess, isError: isTxError, error: txError } = useWaitForTransactionReceipt({ hash })
 
-  const { data: noteData, refetch } = useReadContract({
+  const { data, refetch } = useReadContract({
     address: DHVANI_ADDRESS,
     abi: DHVANI_ABI,
     functionName: 'notes',
@@ -50,6 +50,7 @@ export default function NoteList() {
       enabled: isConnected && !!address
     }
   })
+  const noteData = data as any
 
   const [decryptedAudioUrl, setDecryptedAudioUrl] = useState<string | null>(null)
   const [inputHash, setInputHash] = useState<string>('')
@@ -64,7 +65,7 @@ export default function NoteList() {
       const encryptedBytes = Buffer.from(encryptedHex.replace('0x', ''), 'hex')
       const decryptedBytes = decrypt(eciesPriv.toHex(), encryptedBytes)
       
-      const blob = new Blob([decryptedBytes], { type: 'audio/webm' })
+      const blob = new Blob([decryptedBytes as any], { type: 'audio/webm' })
       const url = URL.createObjectURL(blob)
       setDecryptedAudioUrl(url)
     } catch (err) {
