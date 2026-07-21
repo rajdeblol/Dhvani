@@ -7,16 +7,16 @@ export const ritualChain = defineChain({
   name: 'Ritual Testnet',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.ritual.net'] },
+    default: { http: ['https://rpc.ritualfoundation.org'] },
   },
   blockExplorers: {
-    default: { name: 'Ritual Explorer', url: 'https://explorer.ritual.net' },
+    default: { name: 'Ritual Explorer', url: 'https://explorer.ritualfoundation.org' },
   },
 })
 
 export const config = createConfig({
   chains: [ritualChain],
   transports: {
-    [ritualChain.id]: http(),
+    [ritualChain.id]: http('https://rpc.ritualfoundation.org'),
   },
 })
