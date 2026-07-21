@@ -52,6 +52,7 @@ export default function NoteList() {
   })
 
   const [decryptedAudioUrl, setDecryptedAudioUrl] = useState<string | null>(null)
+  const [inputHash, setInputHash] = useState<string>('')
 
   const handleDecrypt = () => {
     if (!noteData) return
@@ -77,19 +78,16 @@ export default function NoteList() {
     try {
       const { edPriv } = getOrCreateKeys()
       
-      // Simulate re-recording by using the same hash for this demo's simplicity,
-      // since exact SHA-256 matches are brittle for new recordings.
-      // In a real production audio app, we'd use robust audio fingerprinting.
-      const storedHash = noteData[0] as `0x${string}`
+      const hashToVerify = (inputHash.trim() || noteData[0]) as `0x${string}`
       
       // Sign the hash with Ed25519
-      const signature = await signHash(storedHash, edPriv)
+      const signature = await signHash(hashToVerify, edPriv)
 
       writeContract({
         address: DHVANI_ADDRESS,
         abi: DHVANI_ABI,
         functionName: 'verifyNote',
-        args: [storedHash, signature],
+        args: [hashToVerify, signature],
       })
     } catch (err) {
       console.error('Verification failed', err)
@@ -113,8 +111,15 @@ export default function NoteList() {
             </span>
           </div>
 
-          <div className="text-xs text-zinc-500 break-all bg-zinc-950 p-2 rounded">
-            Hash: {noteData[0]}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs text-zinc-400">Paste Hash to Verify:</label>
+            <input 
+              type="text" 
+              value={inputHash}
+              onChange={(e) => setInputHash(e.target.value)}
+              placeholder="0x..." 
+              className="text-xs text-zinc-300 bg-zinc-950 p-2 rounded border border-zinc-700 outline-none focus:border-blue-500 w-full font-mono"
+            />
           </div>
 
           <div className="flex gap-3 mt-2">
