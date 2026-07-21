@@ -38,8 +38,8 @@ const DHVANI_ABI = [
 
 export default function NoteList() {
   const { address, isConnected } = useAccount()
-  const { data: hash, writeContract, isPending } = useWriteContract()
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash })
+  const { data: hash, writeContract, isPending, error } = useWriteContract()
+  const { isLoading: isConfirming, isSuccess, isError: isTxError, error: txError } = useWaitForTransactionReceipt({ hash })
 
   const { data: noteData, refetch } = useReadContract({
     address: DHVANI_ADDRESS,
@@ -142,6 +142,12 @@ export default function NoteList() {
               {isSuccess ? 'Verified!' : 'Verify on Chain'}
             </button>
           </div>
+          
+          {(error || isTxError) && (
+            <div className="text-red-400 text-xs mt-2 bg-red-950/50 p-2 rounded border border-red-900/50 break-words">
+              Verification Failed: {error?.message || txError?.message || 'Transaction reverted'}
+            </div>
+          )}
           
           {isSuccess && (
             <div className="text-green-400 text-xs flex items-center gap-1 mt-1">
