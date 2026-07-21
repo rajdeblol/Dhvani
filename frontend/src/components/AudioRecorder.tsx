@@ -175,32 +175,38 @@ export default function AudioRecorder() {
   }
 
   if (!isConnected) {
-    return <div className="text-zinc-400">Please connect wallet to record notes. Ensure you are on the Ritual Testnet (Chain ID 1979).</div>
+    return <div className="font-satoshi font-medium text-brand-primary text-xl border-l-4 border-brand-red pl-6 py-2">CONNECT WALLET TO RECORD.</div>
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-blue-950/30 border border-blue-900/50 text-blue-200 p-3 rounded-lg text-sm">
-        <p><strong>Note:</strong> Please ensure your wallet is connected to the <strong>Ritual Testnet</strong> (Chain ID: 1979).</p>
+    <div className="space-y-10">
+      <div className="flex flex-col gap-2">
+        <h3 className="font-clash font-bold text-3xl uppercase tracking-tighter">NEW TRANSMISSION</h3>
+        <p className="font-satoshi text-brand-primary/70 max-w-sm">
+          Securely record or upload an audio file. Max limit 1MB.
+        </p>
       </div>
-      <div className="flex flex-wrap gap-4 items-center">
+
+      <div className="flex flex-wrap gap-6 items-center">
         {!isRecording ? (
           <button 
             onClick={startRecording}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="group relative overflow-hidden bg-brand-primary text-brand-base px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:text-brand-red flex items-center gap-2"
           >
-            <Mic size={18} /> Record
+            <span className="absolute inset-0 bg-white transform -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0" />
+            <span className="relative z-10 flex items-center gap-2"><Mic size={18} /> Record</span>
           </button>
         ) : (
           <button 
             onClick={stopRecording}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2 animate-pulse"
+            className="group relative overflow-hidden bg-brand-red text-white px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 flex items-center gap-3"
           >
-            <div className="w-2 h-2 bg-white rounded-full" /> Stop Recording
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse relative z-10" /> 
+            <span className="relative z-10">Stop Recording</span>
           </button>
         )}
 
-        <label className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg font-medium transition-colors cursor-pointer flex items-center gap-2">
+        <label className="group relative overflow-hidden border-2 border-brand-primary text-brand-primary px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:bg-brand-primary hover:text-brand-base cursor-pointer flex items-center gap-2">
           <Upload size={18} /> Upload File
           <input type="file" accept="audio/*" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
         </label>
@@ -208,41 +214,47 @@ export default function AudioRecorder() {
 
       <div 
         ref={waveformRef} 
-        className={`w-full rounded bg-zinc-950 border border-zinc-800 transition-all duration-300 ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent' : 'opacity-100 p-2'}`}
+        className={`w-full bg-white border-2 border-brand-primary transition-all duration-300 shadow-[8px_8px_0_0_#1E1E1E] ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent shadow-none' : 'opacity-100 p-4'}`}
       />
 
       {audioBuffer && !isRecording && (
-        <div className="space-y-4">
+        <div className="space-y-6 pt-6 border-t-2 border-brand-primary border-dashed">
           {uploadedFileName && (
-            <div className="text-sm text-green-400 flex items-center gap-2 bg-green-950/20 p-2 rounded border border-green-900/50">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              File ready: <strong>{uploadedFileName}</strong> ({(audioBuffer.byteLength / 1024).toFixed(1)} KB)
+            <div className="font-satoshi font-medium text-brand-primary flex items-center gap-3">
+              <div className="w-3 h-3 bg-brand-orange animate-pulse" />
+              <span>DATA LOADED: <strong className="uppercase">{uploadedFileName}</strong> ({(audioBuffer.byteLength / 1024).toFixed(1)} KB)</span>
             </div>
           )}
           
           <button 
             onClick={saveToChain}
             disabled={isPending || isConfirming}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-900 disabled:text-zinc-400 rounded-lg font-medium transition-colors flex items-center gap-2"
+            className="group relative overflow-hidden bg-brand-primary text-brand-base px-8 py-4 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:text-brand-red flex items-center gap-2 disabled:bg-brand-primary/50 disabled:hover:text-brand-base disabled:cursor-not-allowed"
           >
-            {isPending || isConfirming ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-            {isConfirming ? 'Confirming...' : 'Save Vault'}
+            <span className="absolute inset-0 bg-white transform -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0" />
+            <span className="relative z-10 flex items-center gap-2">
+              {isPending || isConfirming ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+              {isConfirming ? 'CONFIRMING...' : 'SAVE TO VAULT'}
+            </span>
           </button>
         </div>
       )}
 
       {errorMsg && (
-        <div className="text-red-400 font-medium text-sm p-3 bg-red-950/50 rounded-lg border border-red-900">
-          {errorMsg}
+        <div className="font-satoshi font-bold text-brand-base bg-brand-red p-4 uppercase tracking-wide">
+          ERROR: {errorMsg}
         </div>
       )}
 
       {isSuccess && (
-        <div className="text-green-400 font-medium p-3 bg-green-950/20 border border-green-900/50 rounded-lg space-y-2">
-          <p>Note successfully saved to the blockchain!</p>
+        <div className="font-satoshi p-6 border-2 border-brand-primary bg-white shadow-[8px_8px_0_0_#1E1E1E] space-y-4">
+          <p className="font-bold uppercase tracking-wider text-lg">Transmission Secured!</p>
           {savedHash && (
-            <div className="text-xs text-zinc-400 break-all bg-zinc-900 p-2 rounded">
-              Your Hash: <span className="text-zinc-300">{savedHash}</span>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-brand-primary/50">CRYPTOGRAPHIC HASH</span>
+              <span className="font-mono text-sm bg-brand-base p-3 break-all border border-brand-primary/20">
+                {savedHash}
+              </span>
             </div>
           )}
         </div>
