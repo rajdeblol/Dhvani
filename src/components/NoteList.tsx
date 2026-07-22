@@ -50,6 +50,7 @@ export default function NoteList() {
       enabled: isConnected && !!address
     }
   })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const noteData = data as any
 
   const [decryptedAudioUrl, setDecryptedAudioUrl] = useState<string | null>(null)
@@ -65,6 +66,7 @@ export default function NoteList() {
       const encryptedBytes = Buffer.from(encryptedHex.replace('0x', ''), 'hex')
       const decryptedBytes = decrypt(eciesPriv.toHex(), encryptedBytes)
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const blob = new Blob([decryptedBytes as any], { type: 'audio/webm' })
       const url = URL.createObjectURL(blob)
       setDecryptedAudioUrl(url)

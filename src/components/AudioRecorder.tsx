@@ -156,6 +156,7 @@ export default function AudioRecorder() {
       })
       
       setSavedHash(contentHash)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Error saving to chain', err)
       setErrorMsg(`Transaction failed: ${err?.shortMessage || err?.message || 'Unknown error'}`)
