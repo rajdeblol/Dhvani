@@ -1,63 +1,64 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --color-vault-bg: #09090B;
-  --color-vault-panel: #18181B;
-  --color-vault-cyan: #00E5FF;
-  --color-vault-magenta: #B026FF;
-  --color-vault-text: #FAFAFA;
-  --color-vault-muted: #A1A1AA;
-  --color-vault-border: #27272A;
+  --color-brand-bg: #09090b;
+  --color-brand-surface: #18181b;
+  --color-brand-surface-hover: #27272a;
+  --color-brand-border: rgba(255, 255, 255, 0.08);
+  --color-brand-primary: #6366f1; /* Indigo 500 */
+  --color-brand-primary-hover: #4f46e5; /* Indigo 600 */
+  --color-brand-success: #10b981;
+  --color-brand-danger: #ef4444;
+  --color-brand-text: #fafafa;
+  --color-brand-muted: #a1a1aa;
   
-  --font-space: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
-  background-color: var(--color-vault-bg);
-  color: var(--color-vault-text);
-  font-family: var(--font-space);
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text);
+  font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background-color: var(--color-vault-cyan);
-  color: var(--color-vault-bg);
+  background-color: var(--color-brand-primary);
+  color: white;
 }
 
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-vault-bg);
+  background: var(--color-brand-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-vault-border);
+  background: var(--color-brand-surface-hover);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-vault-cyan);
+  background: var(--color-brand-muted);
 }
 
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 0.4; }
-  100% { transform: scale(1); opacity: 0.8; }
+/* Subtle glow effect for cards */
+.glass-panel {
+  background: rgba(24, 24, 27, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-brand-border);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes decrypt-flicker {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  20% { opacity: 0; }
-  30% { opacity: 1; }
-  100% { opacity: 1; }
+.primary-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s infinite ease-in-out;
-}
-
-.animate-decrypt {
-  animation: decrypt-flicker 0.4s ease-out forwards;
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

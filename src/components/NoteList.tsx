@@ -102,77 +102,81 @@ export default function NoteList() {
   return (
     <div className="w-full">
       {!hasNote ? (
-        <div className="font-mono text-vault-muted text-lg border-l-2 border-vault-muted pl-4 py-2 bg-vault-panel/30">
-          [SYS_INFO: NO_TRANSMISSIONS_IN_VAULT]
+        <div className="glass-panel rounded-xl p-8 text-center text-brand-muted border-brand-border">
+          Your vault is currently empty.
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="flex flex-col justify-between border border-vault-border bg-vault-panel/60 backdrop-blur-md p-8 shadow-[0_0_30px_rgba(0,0,0,0.5)] min-h-[400px]">
+          <div className="glass-panel rounded-2xl p-6 md:p-8 flex flex-col justify-between min-h-[400px]">
             
-            <div className="flex items-start justify-between border-b border-vault-border pb-4 mb-8">
+            <div className="flex items-start justify-between border-b border-brand-border pb-6 mb-6">
               <div>
-                <span className="font-space font-bold text-2xl text-vault-text tracking-wider block mb-1">ENCRYPTED_RITUAL_PAYLOAD</span>
-                <span className="font-mono text-xs text-vault-magenta tracking-widest flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-vault-magenta animate-pulse-ring rounded-full" />
-                  STORED_ON_RITUAL_NETWORK
+                <h3 className="font-semibold text-xl text-white mb-1">Encrypted Payload</h3>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                  Stored on Ritual
                 </span>
               </div>
-              <LockOpen size={20} className="text-vault-magenta" />
+              <div className="w-10 h-10 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center">
+                <LockOpen size={18} className="text-brand-muted" />
+              </div>
             </div>
 
-            <div className="flex flex-col gap-3 mb-8">
-              <label className="font-mono text-xs tracking-widest text-vault-muted">INPUT_HASH_FOR_RITUAL_VERIFICATION:</label>
+            <div className="flex flex-col gap-2 mb-8">
+              <label className="text-sm font-medium text-brand-muted">Verification Hash</label>
               <input 
                 type="text" 
                 value={inputHash}
                 onChange={(e) => setInputHash(e.target.value)}
                 placeholder="0x..." 
-                className="font-mono text-sm text-vault-text bg-vault-bg/50 p-4 border border-vault-border outline-none focus:border-vault-magenta focus:shadow-[0_0_15px_rgba(176,38,255,0.2)] transition-all w-full"
+                className="font-mono text-sm text-brand-text bg-brand-bg px-4 py-3 rounded-lg border border-brand-border outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-full"
               />
             </div>
 
             {(error || isTxError) && (
-              <div className="font-mono text-vault-bg bg-vault-magenta p-4 mb-8 text-sm font-bold animate-decrypt">
-                SYS_ERR: VERIFICATION_FAILED_ON_RITUAL // {error?.message || txError?.message || 'TX_REJECTED'}
+              <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium mb-8">
+                Verification failed: {error?.message || txError?.message || 'Transaction rejected'}
               </div>
             )}
             
             {isSuccess && (
-              <div className="font-mono text-vault-cyan bg-vault-cyan/10 border border-vault-cyan p-4 mb-8 text-sm font-bold flex items-center gap-3">
-                <CheckCircle size={16} /> 
-                SIGNATURE_VERIFIED_ON_RITUAL
+              <div className="bg-brand-success/10 border border-brand-success/30 p-4 rounded-xl text-sm font-medium text-brand-success flex items-center gap-3 mb-8">
+                <CheckCircle size={18} /> 
+                Signature verified on Ritual Network
               </div>
             )}
 
             <div className="mt-auto space-y-4">
               {decryptedAudioUrl && (
-                <div className="p-4 bg-vault-bg/50 border border-vault-cyan/30 mb-6">
-                  <div className="font-mono text-xs text-vault-cyan mb-2">AUDIO_STREAM_DECRYPTED_LOCALLY</div>
-                  <audio src={decryptedAudioUrl} controls className="w-full h-10 custom-audio-player" />
+                <div className="p-4 bg-brand-bg rounded-xl border border-brand-border mb-6">
+                  <div className="text-xs font-medium text-brand-muted mb-3 flex items-center gap-2">
+                    <span className="text-indigo-400">✓</span> Audio Decrypted Locally
+                  </div>
+                  <audio src={decryptedAudioUrl} controls className="w-full h-10" />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {!decryptedAudioUrl && (
                   <button 
                     onClick={handleDecrypt}
-                    className="relative border border-vault-border text-vault-text px-4 py-4 font-mono font-bold tracking-widest text-xs transition-all hover:bg-vault-border/50 hover:text-white"
+                    className="px-4 py-3 rounded-lg font-medium text-brand-text bg-brand-surface border border-brand-border hover:bg-brand-surface-hover transition-colors text-sm"
                   >
-                    INITIATE_DECRYPTION
+                    Decrypt Audio
                   </button>
                 )}
 
                 <button 
                   onClick={handleVerify}
                   disabled={isPending || isConfirming || isSuccess}
-                  className={`relative border px-4 py-4 font-mono font-bold tracking-widest text-xs transition-all flex items-center justify-center gap-3 ${
+                  className={`px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 text-sm ${
                     isSuccess 
-                      ? 'bg-vault-cyan/10 text-vault-cyan border-vault-cyan cursor-default' 
-                      : 'bg-vault-magenta border-vault-magenta text-vault-bg hover:bg-vault-magenta/80 hover:shadow-[0_0_20px_rgba(176,38,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed'
-                  } ${decryptedAudioUrl ? 'col-span-2' : ''}`}
+                      ? 'bg-brand-success/10 text-brand-success border border-brand-success/30 cursor-default' 
+                      : 'text-white primary-gradient hover:opacity-90 shadow-sm disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed'
+                  } ${decryptedAudioUrl ? 'col-span-1 sm:col-span-2' : ''}`}
                 >
                   {(isPending || isConfirming) ? <Loader2 size={16} className="animate-spin" /> : (isSuccess ? <CheckCircle size={16} /> : null)}
-                  {isSuccess ? 'RITUAL_VERIFIED' : 'VERIFY_ON_RITUAL'}
+                  {isSuccess ? 'Verified' : 'Verify on Ritual'}
                 </button>
               </div>
             </div>
