@@ -233,14 +233,29 @@ export default function AudioRecorder() {
       )}
 
       {isSuccess && (
-        <div className="mt-8 p-6 rounded-xl border border-brand-success/30 bg-brand-success/10 text-center">
-          <h4 className="font-semibold text-brand-success flex items-center justify-center gap-2 mb-3">
+        <div className="mt-8 p-6 rounded-xl border border-brand-success/30 bg-brand-success/10 text-center flex flex-col items-center">
+          <h4 className="font-semibold text-brand-success flex items-center justify-center gap-2 mb-4">
             <span className="w-2 h-2 rounded-full bg-brand-success" />
             Successfully stored on Ritual Network
           </h4>
+          
+          {hash && (
+            <div className="inline-flex flex-col items-center mb-4 w-full">
+              <span className="text-xs text-brand-muted mb-1">Transaction Hash</span>
+              <a 
+                href={`https://explorer.ritualfoundation.org/tx/${hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-indigo-400 hover:text-indigo-300 hover:border-indigo-500/50 transition-colors max-w-full"
+              >
+                {hash}
+              </a>
+            </div>
+          )}
+
           {savedHash && (
-            <div className="inline-flex flex-col items-center">
-              <span className="text-xs text-brand-muted mb-1">Verification Hash</span>
+            <div className="inline-flex flex-col items-center w-full">
+              <span className="text-xs text-brand-muted mb-1">Content Verification Hash</span>
               <span className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-brand-text max-w-full">
                 {savedHash}
               </span>

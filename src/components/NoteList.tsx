@@ -142,9 +142,21 @@ export default function NoteList() {
             )}
             
             {isSuccess && (
-              <div className="bg-brand-success/10 border border-brand-success/30 p-4 rounded-xl text-sm font-medium text-brand-success flex items-center gap-3 mb-8">
-                <CheckCircle size={18} /> 
-                Signature verified on Ritual Network
+              <div className="flex flex-col gap-3 mb-8">
+                <div className="bg-brand-success/10 border border-brand-success/30 p-4 rounded-xl text-sm font-medium text-brand-success flex items-center gap-3">
+                  <CheckCircle size={18} /> 
+                  Signature verified on Ritual Network
+                </div>
+                {hash && (
+                  <a 
+                    href={`https://explorer.ritualfoundation.org/tx/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-center text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+                  >
+                    View Verification Transaction on Ritual Explorer
+                  </a>
+                )}
               </div>
             )}
 
