@@ -27,7 +27,7 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <div className="w-3 h-3 rounded-full bg-vault-cyan animate-pulse-ring" />
           <div className="font-space font-bold text-xl tracking-widest text-vault-cyan">
-            DHVANI // ENCLAVE
+            DHVANI // RITUAL_ENCLAVE
           </div>
         </div>
         <div className="hidden md:flex gap-8 font-mono text-sm text-vault-muted tracking-wider">
@@ -42,6 +42,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative z-10 w-full min-h-[70vh] flex flex-col justify-center px-6 md:px-12 pt-32 pb-20">
         <div className="max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 border border-vault-cyan/30 bg-vault-cyan/5 rounded-sm">
+            <div className="w-2 h-2 bg-vault-cyan animate-pulse" />
+            <span className="font-mono text-xs text-vault-cyan tracking-widest uppercase">Powered by Ritual Network</span>
+          </div>
+          
           <h1 className="font-space font-bold text-5xl md:text-7xl leading-tight mb-6">
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-vault-text to-vault-muted">
               SECURE CRYPTOGRAPHIC
@@ -51,8 +56,8 @@ export default function Home() {
           </h1>
           
           <p className="font-mono text-vault-muted text-lg max-w-2xl leading-relaxed mb-10 border-l-2 border-vault-magenta pl-6">
-            End-to-end encrypted audio transmission anchored on the Ritual Network. 
-            Tamper-proof, decentralized, and mathematically guaranteed.
+            End-to-end encrypted audio transmission anchored on the Ritual Coprocessor. 
+            Tamper-proof, AI-ready, and mathematically guaranteed.
           </p>
           
           <a href="#record">
@@ -95,7 +100,7 @@ export default function Home() {
       <footer className="relative z-10 w-full border-t border-vault-border bg-vault-panel/50 pt-16 pb-8 px-6 md:px-12 backdrop-blur-sm">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
           <div>
-            <h3 className="font-space font-bold text-2xl text-vault-cyan mb-4">DHVANI // SYSTEM</h3>
+            <h3 className="font-space font-bold text-2xl text-vault-cyan mb-4">DHVANI // RITUAL_COPROCESSOR</h3>
             <p className="font-mono text-vault-muted text-sm">Encrypted communication protocol operating on Ritual Testnet.</p>
           </div>
           <div>
