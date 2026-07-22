@@ -228,7 +228,7 @@ export default function AudioRecorder() {
             className="w-full relative bg-vault-cyan border border-vault-cyan text-vault-bg px-8 py-4 font-mono font-bold tracking-widest text-sm transition-all hover:bg-vault-cyan/80 hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isPending || isConfirming ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            {isConfirming ? 'AWAITING_NETWORK_CONFIRMATION...' : 'ENCRYPT_AND_COMMIT_TO_VAULT'}
+            {isConfirming ? 'AWAITING_RITUAL_CONFIRMATION...' : 'STORE_SECURELY_ON_RITUAL'}
           </button>
         </div>
       )}

@@ -111,17 +111,17 @@ export default function NoteList() {
             
             <div className="flex items-start justify-between border-b border-vault-border pb-4 mb-8">
               <div>
-                <span className="font-space font-bold text-2xl text-vault-text tracking-wider block mb-1">ENCRYPTED_DATA_PACKET</span>
+                <span className="font-space font-bold text-2xl text-vault-text tracking-wider block mb-1">ENCRYPTED_RITUAL_PAYLOAD</span>
                 <span className="font-mono text-xs text-vault-magenta tracking-widest flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-vault-magenta animate-pulse-ring rounded-full" />
-                  SECURE_LEDGER_ENTRY
+                  STORED_ON_RITUAL_NETWORK
                 </span>
               </div>
               <LockOpen size={20} className="text-vault-magenta" />
             </div>
 
             <div className="flex flex-col gap-3 mb-8">
-              <label className="font-mono text-xs tracking-widest text-vault-muted">INPUT_HASH_FOR_VERIFICATION:</label>
+              <label className="font-mono text-xs tracking-widest text-vault-muted">INPUT_HASH_FOR_RITUAL_VERIFICATION:</label>
               <input 
                 type="text" 
                 value={inputHash}
@@ -133,21 +133,21 @@ export default function NoteList() {
 
             {(error || isTxError) && (
               <div className="font-mono text-vault-bg bg-vault-magenta p-4 mb-8 text-sm font-bold animate-decrypt">
-                SYS_ERR: VERIFICATION_FAILED // {error?.message || txError?.message || 'TX_REJECTED'}
+                SYS_ERR: VERIFICATION_FAILED_ON_RITUAL // {error?.message || txError?.message || 'TX_REJECTED'}
               </div>
             )}
             
             {isSuccess && (
               <div className="font-mono text-vault-cyan bg-vault-cyan/10 border border-vault-cyan p-4 mb-8 text-sm font-bold flex items-center gap-3">
                 <CheckCircle size={16} /> 
-                ED25519_SIGNATURE_VERIFIED_ON_CHAIN
+                SIGNATURE_VERIFIED_ON_RITUAL
               </div>
             )}
 
             <div className="mt-auto space-y-4">
               {decryptedAudioUrl && (
                 <div className="p-4 bg-vault-bg/50 border border-vault-cyan/30 mb-6">
-                  <div className="font-mono text-xs text-vault-cyan mb-2">AUDIO_STREAM_DECRYPTED</div>
+                  <div className="font-mono text-xs text-vault-cyan mb-2">AUDIO_STREAM_DECRYPTED_LOCALLY</div>
                   <audio src={decryptedAudioUrl} controls className="w-full h-10 custom-audio-player" />
                 </div>
               )}
@@ -172,7 +172,7 @@ export default function NoteList() {
                   } ${decryptedAudioUrl ? 'col-span-2' : ''}`}
                 >
                   {(isPending || isConfirming) ? <Loader2 size={16} className="animate-spin" /> : (isSuccess ? <CheckCircle size={16} /> : null)}
-                  {isSuccess ? 'VERIFIED' : 'VERIFY_SIGNATURE'}
+                  {isSuccess ? 'RITUAL_VERIFIED' : 'VERIFY_ON_RITUAL'}
                 </button>
               </div>
             </div>
