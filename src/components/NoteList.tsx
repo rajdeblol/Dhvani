@@ -13,14 +13,21 @@ const DHVANI_ADDRESS = (process.env.NEXT_PUBLIC_DHVANI_ADDRESS || '0xd8dA6BF2696
 
 const DHVANI_ABI = [
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
-    name: 'notes',
+    inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    name: 'notesByHash',
     outputs: [
       { internalType: 'bytes32', name: 'contentHash', type: 'bytes32' },
       { internalType: 'bytes', name: 'encryptedData', type: 'bytes' },
       { internalType: 'bytes', name: 'metadata', type: 'bytes' },
       { internalType: 'bytes32', name: 'ed25519PubKey', type: 'bytes32' }
     ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'user', type: 'address' }],
+    name: 'getUserHashes',
+    outputs: [{ internalType: 'bytes32[]', name: '', type: 'bytes32[]' }],
     stateMutability: 'view',
     type: 'function'
   },
@@ -41,20 +48,32 @@ export default function NoteList() {
   const { data: hash, writeContract, isPending, error } = useWriteContract()
   const { isLoading: isConfirming, isSuccess, isError: isTxError, error: txError } = useWaitForTransactionReceipt({ hash })
 
-  const { data, refetch } = useReadContract({
-    address: DHVANI_ADDRESS,
-    abi: DHVANI_ABI,
-    functionName: 'notes',
-    args: [address],
-    query: {
-      enabled: isConnected && !!address
-    }
-  })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const noteData = data as any
-
   const [decryptedAudioUrl, setDecryptedAudioUrl] = useState<string | null>(null)
   const [inputHash, setInputHash] = useState<string>('')
+
+  const { data: userHashesData } = useReadContract({
+    address: DHVANI_ADDRESS,
+    abi: DHVANI_ABI,
+    functionName: 'getUserHashes',
+    args: [address],
+    query: { enabled: isConnected && !!address }
+  })
+  
+  const userHashes = userHashesData as `0x${string}`[] | undefined
+  const latestHash = userHashes && userHashes.length > 0 ? userHashes[userHashes.length - 1] : undefined
+
+  const hashToFetch = (inputHash.trim() || latestHash) as `0x${string}` | undefined
+
+  const { data: rawNoteData, refetch } = useReadContract({
+    address: DHVANI_ADDRESS,
+    abi: DHVANI_ABI,
+    functionName: 'notesByHash',
+    args: [hashToFetch as `0x${string}`],
+    query: { enabled: isConnected && !!hashToFetch }
+  })
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const noteData = rawNoteData as any
 
   const handleDecrypt = () => {
     if (!noteData) return
@@ -81,7 +100,7 @@ export default function NoteList() {
     try {
       const { edPriv } = getOrCreateKeys()
       
-      const hashToVerify = (inputHash.trim() || noteData[0]) as `0x${string}`
+      const hashToVerify = (inputHash.trim() || noteData?.[0]) as `0x${string}`
       
       const signature = await signHash(hashToVerify, edPriv)
 

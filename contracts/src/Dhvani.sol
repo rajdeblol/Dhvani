@@ -29,8 +29,11 @@ contract Dhvani {
         uint256 timestamp;
     }
 
-    // Mapping of user address to their Note
-    mapping(address => Note) public notes;
+    // Mapping of Note hash to Note data
+    mapping(bytes32 => Note) public notesByHash;
+    
+    // Mapping of user address to an array of their content hashes
+    mapping(address => bytes32[]) public userHashes;
     
     // Mapping of original tx hash (Phase 1 returned value) to the user who requested the audio
     mapping(bytes32 => address) public audioRequesters;
@@ -50,6 +53,10 @@ contract Dhvani {
         IRitualWallet(RITUAL_WALLET).deposit{value: msg.value}(100_000);
     }
 
+    function getUserHashes(address user) external view returns (bytes32[] memory) {
+        return userHashes[user];
+    }
+
     // 1. Store Note
     function storeNote(
         bytes32 _contentHash,
@@ -57,18 +64,21 @@ contract Dhvani {
         bytes calldata _metadata,
         bytes32 _ed25519PubKey
     ) external {
-        notes[msg.sender] = Note({
+        notesByHash[_contentHash] = Note({
             contentHash: _contentHash,
             encryptedData: _encryptedData,
             metadata: _metadata,
             ed25519PubKey: _ed25519PubKey
         });
+        
+        userHashes[msg.sender].push(_contentHash);
+        
         emit NoteStored(msg.sender, _contentHash);
     }
 
     // 2. Verify Note via Ed25519 signature of the recomputed hash
     function verifyNote(bytes32 recomputedHash, bytes calldata signature) external {
-        Note memory userNote = notes[msg.sender];
+        Note memory userNote = notesByHash[recomputedHash];
         require(userNote.contentHash != bytes32(0), "Note not found");
         require(userNote.contentHash == recomputedHash, "Hash mismatch");
 

@@ -56,7 +56,7 @@ contract DhvaniTest is Test {
 
         dhvani.storeNote(contentHash, encryptedData, metadata, ed25519PubKey);
         
-        (bytes32 storedHash, bytes memory storedEncrypted, bytes memory storedMeta, bytes32 storedPubKey) = dhvani.notes(address(this));
+        (bytes32 storedHash, bytes memory storedEncrypted, bytes memory storedMeta, bytes32 storedPubKey) = dhvani.notesByHash(contentHash);
         
         assertEq(storedHash, contentHash);
         assertEq(storedEncrypted, encryptedData);
