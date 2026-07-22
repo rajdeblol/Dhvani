@@ -49,11 +49,13 @@ export default function AudioRecorder() {
     if (waveformRef.current) {
       wavesurferRef.current = WaveSurfer.create({
         container: waveformRef.current,
-        waveColor: '#4f46e5',
-        progressColor: '#818cf8',
+        waveColor: '#00E5FF',
+        progressColor: '#B026FF',
         cursorColor: 'transparent',
         barWidth: 2,
-        height: 50,
+        barGap: 3,
+        barRadius: 2,
+        height: 60,
       })
     }
     return () => wavesurferRef.current?.destroy()
@@ -65,7 +67,6 @@ export default function AudioRecorder() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       
-      // Force extreme low bitrate (8kbps) to ensure the file is tiny and doesn't crash the RPC
       const options = { audioBitsPerSecond: 8000 }
       mediaRecorderRef.current = new MediaRecorder(stream, options)
       
@@ -78,9 +79,8 @@ export default function AudioRecorder() {
         chunksRef.current = []
         const arrayBuffer = await blob.arrayBuffer()
         setAudioBuffer(arrayBuffer)
-        setUploadedFileName("Recorded Audio (Microphone)")
+        setUploadedFileName("REC_MIC_INPUT.raw")
         
-        // Load into wavesurfer for playback
         const url = URL.createObjectURL(blob)
         wavesurferRef.current?.load(url)
       }
@@ -90,7 +90,7 @@ export default function AudioRecorder() {
       setAudioBuffer(null)
     } catch (err) {
       console.error('Failed to start recording', err)
-      setErrorMsg('Failed to start recording.')
+      setErrorMsg('SYS_ERR: AUDIO_INPUT_FAILED')
     }
   }
 
@@ -110,18 +110,16 @@ export default function AudioRecorder() {
     try {
       const arrayBuffer = await file.arrayBuffer()
       setAudioBuffer(arrayBuffer)
-      setUploadedFileName(file.name)
+      setUploadedFileName(file.name.toUpperCase())
 
       const url = URL.createObjectURL(file)
-      // Delay slightly to ensure React has updated the DOM before wavesurfer tries to draw
       setTimeout(() => {
         wavesurferRef.current?.load(url)
       }, 100)
     } catch (err) {
       console.error('Failed to load file', err)
-      setErrorMsg('Could not process this audio file. Please ensure it is a valid audio format.')
+      setErrorMsg('SYS_ERR: INVALID_DATA_FORMAT')
     } finally {
-      // Clear input so same file can be uploaded again
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
@@ -130,32 +128,24 @@ export default function AudioRecorder() {
     if (!audioBuffer) return
     setErrorMsg(null)
 
-    // User requested up to 1MB. Warning: The Ritual RPC might reject this with "oversized data"!
     if (audioBuffer.byteLength > 1048576) {
-      setErrorMsg(`Audio file is too large (${Math.round(audioBuffer.byteLength / 1024)}KB). Please keep it under 1MB!`)
+      setErrorMsg(`SYS_ERR: PAYLOAD_EXCEEDS_MAX_SIZE (${Math.round(audioBuffer.byteLength / 1024)}KB > 1MB)`)
       return
     }
 
     try {
-      // Polyfill global Buffer for eciesjs if missing
       if (typeof window !== 'undefined' && !window.Buffer) {
         window.Buffer = Buffer
       }
 
       const { eciesPub, edPub } = getOrCreateKeys()
-      
-      // Compute keccak256 hash
       const contentHash = await computeAudioHash(audioBuffer)
-      
-      // Encrypt the audio buffer
       const audioBufferView = Buffer.from(audioBuffer)
       const encryptedBuffer = encrypt(eciesPub.toHex(), audioBufferView)
       const encryptedHex = toHex(encryptedBuffer)
       
-      // Metadata (e.g., timestamp)
       const metadataStr = JSON.stringify({ timestamp: Date.now() })
       const metadataHex = toHex(Buffer.from(metadataStr))
-      
       const edPubHex = toHex(edPub) as `0x${string}`
 
       await writeContractAsync({
@@ -168,91 +158,98 @@ export default function AudioRecorder() {
       setSavedHash(contentHash)
     } catch (err: any) {
       console.error('Error saving to chain', err)
-      const msg = `Error: ${err?.shortMessage || err?.message || err?.toString() || 'Unknown error'}`
-      setErrorMsg(msg)
-      window.alert(msg)
+      setErrorMsg(`TX_REJECTED: ${err?.shortMessage || err?.message || 'UNKNOWN'}`)
     }
   }
 
   if (!isConnected) {
-    return <div className="font-satoshi font-medium text-brand-primary text-xl border-l-4 border-brand-red pl-6 py-2">CONNECT WALLET TO RECORD.</div>
+    return (
+      <div className="font-mono text-vault-magenta text-lg border-l-2 border-vault-magenta pl-4 py-2 bg-vault-magenta/10">
+        [SYS_REQ: CONNECT_NODE_TO_INITIALIZE]
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex flex-col gap-2">
-        <h3 className="font-clash font-bold text-3xl uppercase tracking-tighter">NEW TRANSMISSION</h3>
-        <p className="font-satoshi text-brand-primary/70 max-w-sm">
-          Securely record or upload an audio file. Max limit 1MB.
+    <div className="bg-vault-panel/80 backdrop-blur-md border border-vault-border p-8 rounded-sm shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      <div className="flex flex-col gap-2 mb-10 border-b border-vault-border pb-6">
+        <h3 className="font-space font-bold text-2xl text-vault-text tracking-wider flex items-center gap-3">
+          <div className="w-2 h-6 bg-vault-cyan" />
+          AUDIO_CAPTURE_TERMINAL
+        </h3>
+        <p className="font-mono text-vault-muted text-sm ml-5">
+          STATUS: <span className="text-vault-cyan">SECURE_CONNECTION</span> | ENCRYPTION: <span className="text-vault-cyan">ECIES_ENABLED</span>
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-6 items-center">
+      <div className="flex flex-wrap gap-4 items-center mb-8">
         {!isRecording ? (
           <button 
             onClick={startRecording}
-            className="group relative overflow-hidden bg-brand-primary text-brand-base px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:text-brand-red flex items-center gap-2"
+            className="group relative bg-vault-cyan/10 border border-vault-cyan/50 text-vault-cyan px-6 py-3 font-mono text-sm tracking-widest hover:bg-vault-cyan/20 hover:border-vault-cyan transition-all flex items-center gap-3"
           >
-            <span className="absolute inset-0 bg-white transform -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0" />
-            <span className="relative z-10 flex items-center gap-2"><Mic size={18} /> Record</span>
+            <Mic size={16} /> 
+            <span>[REC_START]</span>
           </button>
         ) : (
           <button 
             onClick={stopRecording}
-            className="group relative overflow-hidden bg-brand-red text-white px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 flex items-center gap-3"
+            className="group relative bg-vault-magenta/20 border border-vault-magenta text-vault-magenta px-6 py-3 font-mono text-sm tracking-widest hover:bg-vault-magenta/30 hover:shadow-[0_0_15px_rgba(176,38,255,0.4)] transition-all flex items-center gap-3"
           >
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse relative z-10" /> 
-            <span className="relative z-10">Stop Recording</span>
+            <div className="w-2 h-2 bg-vault-magenta rounded-full animate-pulse-ring" /> 
+            <span>[REC_STOP]</span>
           </button>
         )}
 
-        <label className="group relative overflow-hidden border-2 border-brand-primary text-brand-primary px-6 py-3 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:bg-brand-primary hover:text-brand-base cursor-pointer flex items-center gap-2">
-          <Upload size={18} /> Upload File
+        <label className="group border border-vault-border text-vault-muted px-6 py-3 font-mono text-sm tracking-widest hover:border-vault-text hover:text-vault-text cursor-pointer transition-all flex items-center gap-3">
+          <Upload size={16} /> 
+          <span>[UPLOAD_DATA]</span>
           <input type="file" accept="audio/*" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
         </label>
       </div>
 
       <div 
         ref={waveformRef} 
-        className={`w-full bg-white border-2 border-brand-primary transition-all duration-300 shadow-[8px_8px_0_0_#1E1E1E] ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent shadow-none' : 'opacity-100 p-4'}`}
+        className={`w-full bg-vault-bg/50 border border-vault-border transition-all duration-300 rounded-sm ${(!audioBuffer && !isRecording) ? 'opacity-0 h-0 overflow-hidden border-transparent' : 'opacity-100 p-4 mb-8'}`}
       />
 
       {audioBuffer && !isRecording && (
-        <div className="space-y-6 pt-6 border-t-2 border-brand-primary border-dashed">
+        <div className="space-y-6 pt-6 border-t border-vault-border">
           {uploadedFileName && (
-            <div className="font-satoshi font-medium text-brand-primary flex items-center gap-3">
-              <div className="w-3 h-3 bg-brand-orange animate-pulse" />
-              <span>DATA LOADED: <strong className="uppercase">{uploadedFileName}</strong> ({(audioBuffer.byteLength / 1024).toFixed(1)} KB)</span>
+            <div className="font-mono text-vault-text text-sm flex items-center gap-3 bg-vault-bg p-3 border border-vault-border">
+              <div className="w-2 h-2 bg-vault-cyan animate-pulse" />
+              <span>DATA_CACHED: <span className="text-vault-cyan">{uploadedFileName}</span> // SIZE: {(audioBuffer.byteLength / 1024).toFixed(1)} KB</span>
             </div>
           )}
           
           <button 
             onClick={saveToChain}
             disabled={isPending || isConfirming}
-            className="group relative overflow-hidden bg-brand-primary text-brand-base px-8 py-4 font-satoshi font-bold tracking-widest uppercase text-sm w-fit transition-colors duration-300 hover:text-brand-red flex items-center gap-2 disabled:bg-brand-primary/50 disabled:hover:text-brand-base disabled:cursor-not-allowed"
+            className="w-full relative bg-vault-cyan border border-vault-cyan text-vault-bg px-8 py-4 font-mono font-bold tracking-widest text-sm transition-all hover:bg-vault-cyan/80 hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span className="absolute inset-0 bg-white transform -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0" />
-            <span className="relative z-10 flex items-center gap-2">
-              {isPending || isConfirming ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-              {isConfirming ? 'CONFIRMING...' : 'SAVE TO VAULT'}
-            </span>
+            {isPending || isConfirming ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {isConfirming ? 'AWAITING_NETWORK_CONFIRMATION...' : 'ENCRYPT_AND_COMMIT_TO_VAULT'}
           </button>
         </div>
       )}
 
       {errorMsg && (
-        <div className="font-satoshi font-bold text-brand-base bg-brand-red p-4 uppercase tracking-wide">
-          ERROR: {errorMsg}
+        <div className="mt-6 font-mono text-vault-bg bg-vault-magenta p-4 text-sm font-bold animate-decrypt">
+          {errorMsg}
         </div>
       )}
 
       {isSuccess && (
-        <div className="font-satoshi p-6 border-2 border-brand-primary bg-white shadow-[8px_8px_0_0_#1E1E1E] space-y-4">
-          <p className="font-bold uppercase tracking-wider text-lg">Transmission Secured!</p>
+        <div className="mt-6 font-mono p-6 border border-vault-cyan bg-vault-cyan/10 space-y-4 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-vault-cyan/20 rounded-bl-full" />
+          <p className="font-bold text-vault-cyan tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 bg-vault-cyan inline-block" />
+            COMMIT_SUCCESSFUL
+          </p>
           {savedHash && (
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-brand-primary/50">CRYPTOGRAPHIC HASH</span>
-              <span className="font-mono text-sm bg-brand-base p-3 break-all border border-brand-primary/20">
+              <span className="text-xs text-vault-muted">BLOCKCHAIN_REFERENCE_HASH:</span>
+              <span className="text-xs sm:text-sm bg-vault-bg p-3 break-all text-vault-text border border-vault-border/50">
                 {savedHash}
               </span>
             </div>
