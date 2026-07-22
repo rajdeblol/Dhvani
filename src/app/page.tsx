@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { Headphones } from 'lucide-react'
 import AudioRecorder from '@/components/AudioRecorder'
 import NoteList from '@/components/NoteList'
 
@@ -16,8 +17,8 @@ export default function Home() {
       <header className="fixed top-0 left-0 w-full flex justify-between items-center p-6 border-b border-brand-border bg-brand-bg/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <div className="font-bold text-xl tracking-tight text-white flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
-            Dhvani
+            <Headphones className="w-6 h-6 text-indigo-500 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+            Dhwani
           </div>
         </div>
         <div className="hidden md:flex gap-8 text-sm text-brand-muted font-medium">
@@ -82,8 +83,8 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
           <div>
             <div className="font-bold text-xl tracking-tight text-white flex items-center gap-2 mb-4">
-              <div className="w-4 h-4 rounded bg-gradient-to-br from-indigo-500 to-purple-600" />
-              Dhvani
+              <Headphones className="w-5 h-5 text-indigo-500" />
+              Dhwani
             </div>
             <p className="text-brand-muted text-sm max-w-sm">
               Secure communication protocol operating on the Ritual Coprocessor Testnet.
@@ -102,7 +103,7 @@ export default function Home() {
         </div>
         
         <div className="border-t border-brand-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-brand-muted">
-          <p>© {new Date().getFullYear()} Dhvani Protocol.</p>
+          <p>© {new Date().getFullYear()} Dhwani Protocol.</p>
           <p>Powered by Ritual Network.</p>
         </div>
       </footer>

@@ -4,7 +4,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { Providers } from "./Providers";
 
 export const metadata: Metadata = {
-  title: "Dhvani | Verifiable Voice Vault",
+  title: "Dhwani | Verifiable Voice Vault",
   description: "Privacy-first voice note dApp on Ritual Chain",
 };
 
