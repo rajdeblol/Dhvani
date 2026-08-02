@@ -40,7 +40,7 @@ export default function Home() {
           </a>
         </div>
         <div>
-          <ConnectButton />
+          <ConnectButton showBalance={false} />
         </div>
       </header>
 
