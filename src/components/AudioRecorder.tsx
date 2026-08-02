@@ -128,8 +128,8 @@ export default function AudioRecorder() {
     if (!audioBuffer) return
     setErrorMsg(null)
 
-    if (audioBuffer.byteLength > 1048576) {
-      setErrorMsg(`File size exceeds maximum limit of 1MB (${Math.round(audioBuffer.byteLength / 1024)}KB)`)
+    if (audioBuffer.byteLength > 51200) {
+      setErrorMsg(`File size exceeds maximum EVM limit of 50KB (${Math.round(audioBuffer.byteLength / 1024)}KB). Please record a shorter audio clip.`)
       return
     }
 
@@ -153,6 +153,7 @@ export default function AudioRecorder() {
         abi: DHVANI_ABI,
         functionName: 'storeNote',
         args: [contentHash, encryptedHex, metadataHex, edPubHex],
+        gas: BigInt(30000000), // 30 million gas limit to prevent estimateGas failures
       })
       
       setSavedHash(contentHash)
