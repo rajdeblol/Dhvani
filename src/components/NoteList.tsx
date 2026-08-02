@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useReadContract, useWriteContract, useAccount, useWaitForTransactionReceipt } from 'wagmi'
+import React, { useState, useEffect } from 'react'
+import { useReadContract, useWriteContract, useAccount, useWaitForTransactionReceipt, usePublicClient } from 'wagmi'
 import { decrypt } from 'eciesjs'
-import { toHex, fromHex, hexToString } from 'viem'
+import { toHex, fromHex, hexToString, decodeFunctionData } from 'viem'
 import { Buffer } from 'buffer'
 import { LockOpen, CheckCircle, Play, Mic, Loader2 } from 'lucide-react'
 import { computeAudioHash, getOrCreateKeys, signHash } from '@/lib/crypto'
@@ -40,6 +40,18 @@ const DHVANI_ABI = [
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: '_contentHash', type: 'bytes32' },
+      { internalType: 'bytes', name: '_encryptedData', type: 'bytes' },
+      { internalType: 'bytes', name: '_metadata', type: 'bytes' },
+      { internalType: 'bytes32', name: '_ed25519PubKey', type: 'bytes32' }
+    ],
+    name: 'storeNote',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
   }
 ]
 
@@ -50,6 +62,45 @@ export default function NoteList() {
 
   const [decryptedAudioUrl, setDecryptedAudioUrl] = useState<string | null>(null)
   const [inputHash, setInputHash] = useState<string>('')
+
+  
+  const publicClient = usePublicClient()
+  const [resolvedContentHash, setResolvedContentHash] = useState<string | null>(null)
+  const [isFetchingTx, setIsFetchingTx] = useState(false)
+
+  useEffect(() => {
+    const fetchTx = async () => {
+      setResolvedContentHash(null)
+      const trimmed = inputHash.trim()
+      if (trimmed.length === 66 && trimmed.startsWith('0x')) {
+        try {
+          setIsFetchingTx(true)
+          const tx = await publicClient?.getTransaction({ hash: trimmed as `0x${string}` })
+          if (tx && tx.input) {
+            try {
+              const decoded = decodeFunctionData({
+                abi: DHVANI_ABI,
+                data: tx.input,
+              })
+              if (decoded.functionName === 'storeNote') {
+                const contentHashArg = decoded.args[0] as string
+                setResolvedContentHash(contentHashArg)
+              }
+            } catch (err) {
+              // Not a storeNote transaction
+            }
+          }
+        } catch (err) {
+          // Tx not found
+        } finally {
+          setIsFetchingTx(false)
+        }
+      }
+    }
+    fetchTx()
+  }, [inputHash, publicClient])
+
+  const effectiveHash = resolvedContentHash || inputHash.trim()
 
   const { data: userHashesData } = useReadContract({
     address: DHVANI_ADDRESS,
@@ -62,7 +113,7 @@ export default function NoteList() {
   const userHashes = userHashesData as `0x${string}`[] | undefined
   const latestHash = userHashes && userHashes.length > 0 ? userHashes[userHashes.length - 1] : undefined
 
-  const hashToFetch = (inputHash.trim() || latestHash) as `0x${string}` | undefined
+  const hashToFetch = (effectiveHash || latestHash) as `0x${string}` | undefined
 
   const { data: rawNoteData, refetch } = useReadContract({
     address: DHVANI_ADDRESS,
@@ -100,7 +151,7 @@ export default function NoteList() {
     try {
       const { edPriv } = getOrCreateKeys()
       
-      const hashToVerify = (inputHash.trim() || noteData?.[0]) as `0x${string}`
+      const hashToVerify = (effectiveHash || noteData?.[0]) as `0x${string}`
       
       const signature = await signHash(hashToVerify, edPriv)
 
@@ -122,9 +173,36 @@ export default function NoteList() {
 
   return (
     <div className="w-full">
+      <div className="glass-panel rounded-2xl p-6 md:p-8 flex flex-col mb-8 border border-brand-border">
+        <div className="flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex-grow flex flex-col gap-2 w-full">
+            <label className="text-sm font-medium text-brand-muted">Verification Hash or Transaction Hash</label>
+            <div className="relative">
+              <input 
+                type="text" 
+                value={inputHash}
+                onChange={(e) => setInputHash(e.target.value)}
+                placeholder="0x..." 
+                className="font-mono text-sm text-brand-text bg-brand-bg px-4 py-3 rounded-lg border border-brand-border outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-full"
+              />
+              {isFetchingTx && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <Loader2 className="animate-spin text-brand-muted" size={18} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        {resolvedContentHash && (
+          <p className="text-xs text-brand-success mt-2">
+            ✓ Transaction hash resolved to Verification hash
+          </p>
+        )}
+      </div>
+
       {!hasNote ? (
         <div className="glass-panel rounded-xl p-8 text-center text-brand-muted border-brand-border">
-          Your vault is currently empty.
+          {inputHash ? 'No note found for this hash.' : 'Your vault is currently empty.'}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -141,17 +219,6 @@ export default function NoteList() {
               <div className="w-10 h-10 rounded-full bg-brand-surface border border-brand-border flex items-center justify-center">
                 <LockOpen size={18} className="text-brand-muted" />
               </div>
-            </div>
-
-            <div className="flex flex-col gap-2 mb-8">
-              <label className="text-sm font-medium text-brand-muted">Verification Hash</label>
-              <input 
-                type="text" 
-                value={inputHash}
-                onChange={(e) => setInputHash(e.target.value)}
-                placeholder="0x..." 
-                className="font-mono text-sm text-brand-text bg-brand-bg px-4 py-3 rounded-lg border border-brand-border outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-full"
-              />
             </div>
 
             {(error || isTxError) && (
