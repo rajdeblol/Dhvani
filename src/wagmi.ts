@@ -5,7 +5,7 @@ import { defineChain } from 'viem'
 export const ritualChain = defineChain({
   id: 1979,
   name: 'Ritual Testnet',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  nativeCurrency: { name: 'Ritual', symbol: 'RITUAL', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.ritualfoundation.org'] },
   },
