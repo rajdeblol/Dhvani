@@ -5,6 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { Headphones, Mic, Lock, Server, CheckCircle, ShieldCheck } from 'lucide-react'
 import AudioRecorder from '@/components/AudioRecorder'
 import NoteList from '@/components/NoteList'
+import Typewriter from '@/components/Typewriter'
 
 export default function Home() {
   return (
@@ -17,26 +18,26 @@ export default function Home() {
       <header className="fixed top-0 left-0 w-full flex justify-between items-center p-6 border-b border-brand-border bg-brand-bg/80 backdrop-blur-md z-50">
         <div className="flex items-center gap-3">
           <div className="font-bold text-xl tracking-tight text-white flex items-center gap-2">
-            <Headphones className="w-6 h-6 text-indigo-500 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]" />
+            <Headphones className="w-6 h-6 text-brand-primary drop-shadow-[0_0_8px_var(--color-brand-primary)]" />
             Dhwani
           </div>
         </div>
         <div className="hidden md:flex gap-8 text-sm text-brand-muted font-medium">
           <a href="#home" className="hover:text-white transition-colors relative group">
             Home
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full rounded-full"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full rounded-full"></span>
           </a>
           <a href="#how-it-works" className="hover:text-white transition-colors relative group">
             How it Works
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full rounded-full"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full rounded-full"></span>
           </a>
           <a href="#record" className="hover:text-white transition-colors relative group">
             Record
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full rounded-full"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full rounded-full"></span>
           </a>
           <a href="#vault" className="hover:text-white transition-colors relative group">
             Vault
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full rounded-full"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full rounded-full"></span>
           </a>
         </div>
         <div>
@@ -49,12 +50,13 @@ export default function Home() {
         <div className="max-w-3xl flex flex-col items-center">
           
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full border border-brand-border bg-brand-surface text-xs font-medium text-brand-muted shadow-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse shadow-[0_0_8px_var(--color-brand-primary)]" />
             Powered by Ritual Network
           </div>
           
-          <h1 className="font-bold text-5xl md:text-7xl leading-tight mb-6 tracking-tight text-white">
-            Secure Voice <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500">Vault.</span>
+          <h1 className="font-bold text-5xl md:text-7xl leading-tight mb-6 tracking-tight text-white flex flex-col md:flex-row gap-3 md:gap-4 items-center">
+            <span className="italic">Secure</span> 
+            <span className="text-brand-primary"><Typewriter text="Voice Vault." delay={80} /></span>
           </h1>
           
           <p className="text-brand-muted text-lg md:text-xl max-w-2xl leading-relaxed mb-10">
@@ -96,9 +98,9 @@ export default function Home() {
               { icon: Server, title: "3. Decentralize", desc: "The encrypted payload is sent to the Ritual Network Coprocessor via smart contracts." },
               { icon: ShieldCheck, title: "4. Verify", desc: "Retrieve your audio anytime with the content verification hash or transaction hash." }
             ].map((step, idx) => (
-              <div key={idx} className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center hover:scale-105 hover:-translate-y-2 hover:border-indigo-500/50 transition-all duration-300 cursor-default group">
-                <div className="w-16 h-16 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-6 group-hover:bg-indigo-500/20 group-hover:scale-110 transition-all duration-300">
-                  <step.icon className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+              <div key={idx} className="glass-panel p-6 rounded-2xl flex flex-col items-center text-center hover:scale-105 hover:-translate-y-2 hover:border-brand-primary/50 transition-all duration-300 cursor-default group">
+                <div className="w-16 h-16 rounded-full bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center mb-6 group-hover:bg-brand-primary/20 group-hover:scale-110 transition-all duration-300">
+                  <step.icon className="w-8 h-8 text-brand-primary group-hover:text-brand-primary-hover transition-colors" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
                 <p className="text-sm text-brand-muted leading-relaxed">{step.desc}</p>
@@ -124,7 +126,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
           <div>
             <div className="font-bold text-xl tracking-tight text-white flex items-center gap-2 mb-4">
-              <Headphones className="w-5 h-5 text-indigo-500" />
+              <Headphones className="w-5 h-5 text-brand-primary" />
               Dhwani
             </div>
             <p className="text-brand-muted text-sm max-w-sm">

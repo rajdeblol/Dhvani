@@ -3,15 +3,15 @@
 
 @theme inline {
   --color-brand-bg: #09090b;
-  --color-brand-surface: #18181b;
-  --color-brand-surface-hover: #27272a;
-  --color-brand-border: rgba(255, 255, 255, 0.08);
-  --color-brand-primary: #6366f1; /* Indigo 500 */
-  --color-brand-primary-hover: #4f46e5; /* Indigo 600 */
+  --color-brand-surface: #121214;
+  --color-brand-surface-hover: #1a1a1d;
+  --color-brand-border: rgba(255, 255, 255, 0.05);
+  --color-brand-primary: #00d182;
+  --color-brand-primary-hover: #00b370;
   --color-brand-success: #10b981;
   --color-brand-danger: #ef4444;
   --color-brand-text: #fafafa;
-  --color-brand-muted: #a1a1aa;
+  --color-brand-muted: #888893;
   
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -58,11 +58,12 @@ body {
 }
 
 .primary-gradient {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  background: var(--color-brand-primary);
+  color: #000;
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  background: linear-gradient(135deg, #ffffff 0%, var(--color-brand-muted) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

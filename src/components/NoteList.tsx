@@ -183,7 +183,7 @@ export default function NoteList() {
                 value={inputHash}
                 onChange={(e) => setInputHash(e.target.value)}
                 placeholder="0x..." 
-                className="font-mono text-sm text-brand-text bg-brand-bg px-4 py-3 rounded-lg border border-brand-border outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-full"
+                className="font-mono text-sm text-brand-text bg-brand-bg px-4 py-3 rounded-lg border border-brand-border outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all w-full"
               />
               {isFetchingTx && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -211,8 +211,8 @@ export default function NoteList() {
             <div className="flex items-start justify-between border-b border-brand-border pb-6 mb-6">
               <div>
                 <h3 className="font-semibold text-xl text-white mb-1">Encrypted Payload</h3>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-400">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-primary/10 border border-brand-primary/20 text-xs font-medium text-brand-primary">
+                  <div className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse" />
                   Stored on Ritual
                 </span>
               </div>
@@ -238,7 +238,7 @@ export default function NoteList() {
                     href={`https://explorer.ritualfoundation.org/tx/${hash}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-center text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+                    className="text-xs text-center text-brand-primary hover:text-brand-primary-hover hover:underline transition-colors"
                   >
                     View Verification Transaction on Ritual Explorer
                   </a>
@@ -250,7 +250,7 @@ export default function NoteList() {
               {decryptedAudioUrl && (
                 <div className="p-4 bg-brand-bg rounded-xl border border-brand-border mb-6">
                   <div className="text-xs font-medium text-brand-muted mb-3 flex items-center gap-2">
-                    <span className="text-indigo-400">✓</span> Audio Decrypted Locally
+                    <span className="text-brand-primary">✓</span> Audio Decrypted Locally
                   </div>
                   <audio src={decryptedAudioUrl} controls className="w-full h-10" />
                 </div>

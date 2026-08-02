@@ -255,13 +255,13 @@ export default function AudioRecorder() {
                   href={`https://explorer.ritualfoundation.org/tx/${hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-indigo-400 hover:text-indigo-300 hover:border-indigo-500/50 transition-colors max-w-full"
+                  className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-brand-primary hover:text-brand-primary-hover hover:border-brand-primary/50 transition-colors max-w-full"
                 >
                   {hash}
                 </a>
                 <button 
                   onClick={() => handleCopy(hash)}
-                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-indigo-500 transition-colors shrink-0"
+                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-brand-primary transition-colors shrink-0"
                   title="Copy Transaction Hash"
                 >
                   {copiedHash === hash ? <Check size={16} className="text-brand-success" /> : <Copy size={16} />}
@@ -279,7 +279,7 @@ export default function AudioRecorder() {
                 </span>
                 <button 
                   onClick={() => handleCopy(savedHash)}
-                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-indigo-500 transition-colors shrink-0"
+                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-brand-primary transition-colors shrink-0"
                   title="Copy Verification Hash"
                 >
                   {copiedHash === savedHash ? <Check size={16} className="text-brand-success" /> : <Copy size={16} />}
