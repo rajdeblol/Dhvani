@@ -5,7 +5,7 @@ import { useWriteContract, useAccount, useWaitForTransactionReceipt } from 'wagm
 import { encrypt } from 'eciesjs'
 import { toHex, bytesToHex } from 'viem'
 import { Buffer } from 'buffer'
-import { Mic, Square, Save, Loader2, Upload } from 'lucide-react'
+import { Mic, Square, Save, Loader2, Upload, Copy, Check } from 'lucide-react'
 import { computeAudioHash, getOrCreateKeys } from '@/lib/crypto'
 import WaveSurfer from 'wavesurfer.js'
 
@@ -38,6 +38,13 @@ export default function AudioRecorder() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [savedHash, setSavedHash] = useState<string | null>(null)
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
+  const [copiedHash, setCopiedHash] = useState<string | null>(null)
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedHash(text)
+    setTimeout(() => setCopiedHash(null), 2000)
+  }
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   
@@ -243,23 +250,41 @@ export default function AudioRecorder() {
           {hash && (
             <div className="inline-flex flex-col items-center mb-4 w-full">
               <span className="text-xs text-brand-muted mb-1">Transaction Hash</span>
-              <a 
-                href={`https://explorer.ritualfoundation.org/tx/${hash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-indigo-400 hover:text-indigo-300 hover:border-indigo-500/50 transition-colors max-w-full"
-              >
-                {hash}
-              </a>
+              <div className="flex items-center gap-2 max-w-full">
+                <a 
+                  href={`https://explorer.ritualfoundation.org/tx/${hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-indigo-400 hover:text-indigo-300 hover:border-indigo-500/50 transition-colors max-w-full"
+                >
+                  {hash}
+                </a>
+                <button 
+                  onClick={() => handleCopy(hash)}
+                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-indigo-500 transition-colors shrink-0"
+                  title="Copy Transaction Hash"
+                >
+                  {copiedHash === hash ? <Check size={16} className="text-brand-success" /> : <Copy size={16} />}
+                </button>
+              </div>
             </div>
           )}
 
           {savedHash && (
             <div className="inline-flex flex-col items-center w-full">
               <span className="text-xs text-brand-muted mb-1">Content Verification Hash</span>
-              <span className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-brand-text max-w-full">
-                {savedHash}
-              </span>
+              <div className="flex items-center gap-2 max-w-full">
+                <span className="font-mono text-sm bg-brand-bg px-4 py-2 rounded-lg border border-brand-border break-all text-brand-text max-w-full">
+                  {savedHash}
+                </span>
+                <button 
+                  onClick={() => handleCopy(savedHash)}
+                  className="p-2 bg-brand-surface border border-brand-border rounded-lg text-brand-muted hover:text-white hover:border-indigo-500 transition-colors shrink-0"
+                  title="Copy Verification Hash"
+                >
+                  {copiedHash === savedHash ? <Check size={16} className="text-brand-success" /> : <Copy size={16} />}
+                </button>
+              </div>
             </div>
           )}
         </div>
