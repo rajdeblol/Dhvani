@@ -61,7 +61,7 @@ Run the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the dApp.
+Open https://dhwani-phi.vercel.app/ to view the dApp.
 
 ## Usage Guide
 
